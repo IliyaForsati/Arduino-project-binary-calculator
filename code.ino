@@ -13,7 +13,6 @@ const int mul_but = 8;
 const int div_but = 9;
 const int equal_but = 10;
 const int backspace_but = 11;
-int laststate[12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 void setup() {
     lcd.begin(20, 4);
@@ -69,7 +68,7 @@ void backspace_func() {
 void loop() {
     for (int i = 2; i < 12; i++) {
         int currentstate = digitalRead(i);
-        if (currentstate == LOW && laststate[i] == HIGH) {
+        if (currentstate == LOW) {
         switch (i) {
           case zero_but:
             zero_func();
@@ -103,6 +102,7 @@ void loop() {
           break;
         }
       }
-      laststate[i] = currentstate;
-    } 
+    }
+
+    delay(200);
 }
