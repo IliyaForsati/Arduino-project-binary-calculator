@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <string.h>
 
 LiquidCrystal_I2C lcd(0X27, 20, 4);
 
@@ -14,55 +15,106 @@ const int div_but = 9;
 const int equal_but = 10;
 const int backspace_but = 11;
 
+const int MAX_SIZE = 100;
+char input[MAX_SIZE];
+char* DString = "";
+
 void setup() {
     lcd.begin(20, 4);
     lcd.backlight();
     lcd.setCursor(0, 0);
+    lcd.blink();
 
     for (int i = 0; i < 12; i++) {
       pinMode(i, INPUT_PULLUP);
     }
+
+    for (int i = 0; i < MAX_SIZE; i++) {
+        input[i] = 0;
+    }
+}
+
+char* creatDString() {
+  char result[MAX_SIZE] = "";
+    char temp[MAX_SIZE];
+    int tempIndex = 0;
+
+    for (int i = 0; true; i++) {
+        if (input[i] == '0' || input[i] == '1') {
+            temp[tempIndex++] = input[i];
+        } else {
+            if (tempIndex > 0) {
+                temp[tempIndex] = '\0';
+                int decimal = strtol(temp, NULL, 2);
+                char decimalStr[50];
+                sprintf(decimalStr, "%d", decimal);
+                strcat(result, decimalStr);
+                tempIndex = 0;
+            }
+            strncat(result, &input[i], 1);
+        }
+
+        if (input[i] == '\0') break;
+    }
+
+    strcpy(DString, result);
+}
+
+void updateLcd() {
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print(DString);
+  lcd.setCursor(0, 0);
+  lcd.print(input);
 }
 
 void zero_func() {
-    // lcd.clear();
-    lcd.print("0");
+     strcat(input, "0");
+     DString = creatDString();
+
+     updateLcd();
 }
 void one_func() {
-    // lcd.clear();
-    lcd.print("1");
+    strcat(input, "1");
+    DString = creatDString();
+
+     updateLcd();
 }
 void left_par_func() {
-    // lcd.clear();
-    lcd.print("(");
+    strcat(input, "(");
+    strcat(DString, "(");
+    updateLcd();
 }
 void right_par_func() {
-    // lcd.clear();
-    lcd.print(")");
+    strcat(input, ")");
+    strcat(DString, ")");
+    updateLcd();
 }
 void add_func() {
-    // lcd.clear();
-    lcd.print("+");
+    strcat(input, "+");
+    strcat(DString, "+");
+    updateLcd();
 }
 void sub_func() {
-    // lcd.clear();
-    lcd.print("-");
+    strcat(input, "-");
+    strcat(DString, "-");
+    updateLcd();
 }
 void mul_func() {
-    // lcd.clear();
-    lcd.print("x");
+    strcat(input, "x");
+    strcat(DString, "x");
+    updateLcd();
 }
 void div_func() {
-    // lcd.clear();
-    lcd.print("/");
+    strcat(input, "/");
+    strcat(DString, "/");
+    updateLcd();
 }
 void equal_func() {
-    // lcd.clear();
-    lcd.print("=");
+    
 }
 void backspace_func() {
-    // lcd.clear();
-    lcd.print("Backspace");
+    
 }
 
 void loop() {
@@ -102,7 +154,7 @@ void loop() {
           break;
         }
       }
-    }
+    } 
 
-    delay(200);
+    delay(225);
 }
